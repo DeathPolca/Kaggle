@@ -22,7 +22,7 @@ print(train.shape)199999*77，第一列是id，中间75列是特征，最后一�
 print(test.shape)99999*76，第一列是id，后75列是特征
 '''
 
-'''
+
 #找一组最初的参数
 X_train=np.array(pd.read_csv("D:/Study/Grade 2/Second/Machine learning/competition/train.csv",usecols=list(range(1,76))))
 y_train=np.array(pd.read_csv("D:/Study/Grade 2/Second/Machine learning/competition/train.csv",usecols=[76]))
@@ -51,10 +51,10 @@ n_trials=50 # try50次
 study.optimize(objective, n_trials=n_trials)
 params=study.best_params
 print(params)
-'''
+
 #调参
 #n_estimators
-'''
+
 params={
     'learning_rate': 0.05009346366887093, 
     'max_depth': 8, 
@@ -70,10 +70,10 @@ cv_results = lgb.cv(
 
 print('best n_estimators:', len(cv_results['rmse-mean']))
 print('best cv score:', cv_results['rmse-mean'][-1])#选出来177
-'''
+
 
 #max_depth 和 num_leaves
-'''
+
 model_lgb = lgb.LGBMRegressor(num_leaves=20,
                               learning_rate=0.005, n_estimators=177, max_depth=8,
                               metric='rmse', bagging_fraction = 1.0,feature_fraction = 0.42)
@@ -89,9 +89,9 @@ means = gsearch1.cv_results_['mean_test_score']
 params = gsearch1.cv_results_['params']
 for mean,param in zip(means,params):
     print("%f  with:   %r" % (mean,param))
-'''
 
-'''
+
+
 params_test2={
     'max_depth': [6,7,8],
     'num_leaves':[7,8,9,10,11,12]
@@ -105,9 +105,9 @@ means = gsearch2.cv_results_['mean_test_score']
 params = gsearch2.cv_results_['params']
 for mean,param in zip(means,params):
     print("%f  with:   %r" % (mean,param))#选出来8，12
-'''
 
-'''
+
+
 params_test3={
     'min_child_samples': [18, 19, 20, 21, 22],
     'min_child_weight':[0.001, 0.002]
@@ -121,9 +121,9 @@ means = gsearch3.cv_results_['mean_test_score']
 params = gsearch3.cv_results_['params']
 for mean,param in zip(means,params):
     print("%f  with:   %r" % (mean,param))#选出来21
-'''
 
-'''
+
+
 params_test4={
     'feature_fraction': [0.5, 0.6, 0.7, 0.8, 0.9],
     'bagging_fraction': [0.6, 0.7, 0.8, 0.9, 1.0]
@@ -137,9 +137,7 @@ means = gsearch4.cv_results_['mean_test_score']
 params = gsearch4.cv_results_['params']
 for mean,param in zip(means,params):
     print("%f  with:   %r" % (mean,param))#选出来1.0,0.5
-'''
 
-'''
 #更细化feature_fraction
 params_test={
     'feature_fraction': [0.42, 0.45, 0.48, 0.5, 0.52, 0.55, 0.58 ]
@@ -153,9 +151,9 @@ means = gsearch.cv_results_['mean_test_score']
 params = gsearch.cv_results_['params']
 for mean,param in zip(means,params):
     print("%f  with:   %r" % (mean,param))#选出来0.42
-'''
 
-'''
+
+
 params_test5={
     'reg_alpha': [9.23,9.33,9.43,9.53,9.63],
     'reg_lambda': [8.67,8.68,8.69,8.79,8.89]
@@ -169,7 +167,7 @@ means = gsearch5.cv_results_['mean_test_score']
 params = gsearch5.cv_results_['params']
 for mean,param in zip(means,params):
     print("%f  with:   %r" % (mean,param))#选出来'reg_alpha': 9.63, 'reg_lambda': 8.89
-'''
+
 
 #最终微调
 
@@ -194,8 +192,17 @@ print('best n_estimators:', len(cv_results['rmse-mean']))
 print('best cv score:', cv_results['rmse-mean'][-1])
 
 
-'''
-model=lgb.LGBMClassifier(n_estimators= 208, reg_alpha= 6.724514508338747, reg_lambda= 5.582852954129547, learning_rate= 0.05009346366887093, max_depth= 8, num_leaves= 20)
+
+model=lgb.LGBMClassifier(   learning_rate=0.005,
+    n_estimators=2244,
+    max_depth=8,
+    num_leaves=24,
+    min_child_sample=20, 
+    min_child_weigh=0.001,
+    feature_fraction=0.24,
+    bagging_fraction=1.0,
+    reg_alpha= 9.53, 
+    reg_lambda= 8.79,)
 model.fit(X_train,y_train)
 y_test=model.predict_proba(X_test)
 y_test=pd.DataFrame(y_test)
@@ -203,4 +210,3 @@ y_test.insert(0,"id",list(range(200000,300000)))
 y_test.columns=["id","Class_1","Class_2","Class_3","Class_4","Class_5","Class_6","Class_7","Class_8","Class_9"]
 print(y_test.shape)
 y_test.to_csv("D:/Study/Coding/vscode-python/y_test_lgb.csv",index=False)
-'''
